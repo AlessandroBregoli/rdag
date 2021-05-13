@@ -19,11 +19,12 @@ struct WeightedEdge {
     target: u64,
 }
 
-#[derive(Clone)]
-struct Step {
+#[derive(Clone, Debug, PartialEq)]
+pub struct Step {
     distance: f64,
     predecessor: Option<u64>,
 }
+
 
 impl DAG {
     pub fn init(n_nodes: &u64, edge_list: &Vec<(u64,u64,f64)>) -> DAG {
@@ -75,7 +76,7 @@ impl DAG {
         t_sort.insert(0, node as u64);
     }
 
-    pub fn optimal_path(&self, path_type: OptimalPathType, source: u64, destination: u64) -> (f64, Vec<u64>){
+    pub fn optimal_path(&self, path_type: OptimalPathType, source: u64) -> Vec<Step>{
         let mut nodes:Vec<Step> = Vec::new();
         
         for _i in 0.. self.adj_list.len() {
@@ -91,22 +92,7 @@ impl DAG {
                 DAG::relax(&path_type, &mut nodes, x, edge.target, edge.weight);
             }
         }
-
-        match nodes[destination as usize].predecessor {
-            None => (nodes[destination as usize].distance, Vec::new()),
-            Some(_) => {
-                let mut node = destination;
-                let mut optimal_path_list: Vec<u64> = Vec::new();
-                while node != source {
-                    optimal_path_list.push(node);
-                    node = nodes[node as usize].predecessor.unwrap();
-                }
-                optimal_path_list.push(node);
-                return (nodes[destination as usize].distance, optimal_path_list);
-            }
-        }
-
-
+        return nodes;
         
     }
 
@@ -203,9 +189,13 @@ mod tests {
             (0,2,1.0),
             (1,2,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let o_p = dag.optimal_path(OptimalPathType::Shortest, 0, 2);
-        assert_eq!(o_p.0, 1.0);
-        assert_eq!(o_p.1, vec![2,0]);
+        let op = dag.optimal_path(OptimalPathType::Shortest, 0);
+        let true_op = vec![
+            Step{distance: 0.0, predecessor: None},
+            Step{distance: 1.0, predecessor: Some(0)},
+            Step{distance: 1.0, predecessor: Some(0)}
+        ];
+        assert_eq!(op, true_op);
         
     }
 
@@ -218,35 +208,20 @@ mod tests {
             (0,2,1.0),
             (1,2,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let o_p = dag.optimal_path(OptimalPathType::Longest, 0, 2);
-        assert_eq!(o_p.0, 2.0);
-        assert_eq!(o_p.1, vec![2,1,0]);
-        
-    }
+        let op = dag.optimal_path(OptimalPathType::Longest, 0);
+        let true_op = vec![
+            Step{distance: 0.0, predecessor: None},
+            Step{distance: 1.0, predecessor: Some(0)},
+            Step{distance: 2.0, predecessor: Some(1)}
+        ];
+        assert_eq!(op, true_op);
 
-    #[test]
-    fn shortest_path() {
-        let n_nodes = 8;
-        let edge_list = vec![
-            (0,1,2.0),
-            (1,2,3.0),
-            (2,3,1.0),
-            (0,4,4.0),
-            (4,3,3.0),
-            (5,4,1.0),
-            (5,6,1.0),
-            (7,0,1.0)];
-        let dag = DAG::init(&n_nodes, &edge_list);
-        let o_p = dag.optimal_path(OptimalPathType::Shortest, 7, 3);
         
-        assert_eq!(o_p.0, 7.0);
-        assert_eq!(o_p.1, vec![3,2,1,0,7]);
-
     }
 
 
     #[test]
-    fn longest_path() {
+    fn intermediate_shortest_path(){
         let n_nodes = 8;
         let edge_list = vec![
             (0,1,2.0),
@@ -258,31 +233,48 @@ mod tests {
             (5,6,1.0),
             (7,0,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let o_p = dag.optimal_path(OptimalPathType::Longest, 7, 3);
-        
-        assert_eq!(o_p.0, 9.0);
-        assert_eq!(o_p.1, vec![3,4,0,7]);
+        let op = dag.optimal_path(OptimalPathType::Shortest, 7);
+        let true_op = vec![
+            Step{distance: 1.0, predecessor: Some(7)},
+            Step{distance: 3.0, predecessor: Some(0)},
+            Step{distance: 6.0, predecessor: Some(1)},
+            Step{distance: 7.0, predecessor: Some(2)},
+            Step{distance: 5.0, predecessor: Some(0)},
+            Step{distance: f64::INFINITY, predecessor: None},
+            Step{distance: f64::INFINITY, predecessor: None},
+            Step{distance: 0.0, predecessor: None},
+        ];
+        assert_eq!(op, true_op);
 
     }
 
 
     #[test]
-    fn impossible_path() {
+    fn intermediate_longest_path(){
         let n_nodes = 8;
         let edge_list = vec![
             (0,1,2.0),
             (1,2,3.0),
             (2,3,1.0),
             (0,4,4.0),
-            (4,3,3.0),
+            (4,3,4.0),
             (5,4,1.0),
             (5,6,1.0),
             (7,0,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let o_p = dag.optimal_path(OptimalPathType::Longest, 3, 7);
-        
-        assert_eq!(o_p.0, f64::NEG_INFINITY);
-        assert_eq!(o_p.1, vec![]);
+        let op = dag.optimal_path(OptimalPathType::Longest, 7);
+        let true_op = vec![
+            Step{distance: 1.0, predecessor: Some(7)},
+            Step{distance: 3.0, predecessor: Some(0)},
+            Step{distance: 6.0, predecessor: Some(1)},
+            Step{distance: 9.0, predecessor: Some(4)},
+            Step{distance: 5.0, predecessor: Some(0)},
+            Step{distance: f64::NEG_INFINITY, predecessor: None},
+            Step{distance: f64::NEG_INFINITY, predecessor: None},
+            Step{distance: 0.0, predecessor: None},
+        ];
+        assert_eq!(op, true_op);
 
     }
+
 }
