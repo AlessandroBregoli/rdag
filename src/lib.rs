@@ -21,8 +21,8 @@ struct WeightedEdge {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Step {
-    distance: f64,
-    predecessor: Option<u64>,
+    pub distance: f64,
+    pub predecessor: Option<u64>,
 }
 
 
@@ -76,7 +76,7 @@ impl DAG {
         t_sort.insert(0, node as u64);
     }
 
-    pub fn optimal_path(&self, path_type: OptimalPathType, source: u64) -> Vec<Step>{
+    pub fn optimal_path(&self, path_type: &OptimalPathType, source: u64) -> Vec<Step>{
         let mut nodes:Vec<Step> = Vec::new();
         
         for _i in 0.. self.adj_list.len() {
@@ -189,7 +189,7 @@ mod tests {
             (0,2,1.0),
             (1,2,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let op = dag.optimal_path(OptimalPathType::Shortest, 0);
+        let op = dag.optimal_path(&OptimalPathType::Shortest, 0);
         let true_op = vec![
             Step{distance: 0.0, predecessor: None},
             Step{distance: 1.0, predecessor: Some(0)},
@@ -208,7 +208,7 @@ mod tests {
             (0,2,1.0),
             (1,2,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let op = dag.optimal_path(OptimalPathType::Longest, 0);
+        let op = dag.optimal_path(&OptimalPathType::Longest, 0);
         let true_op = vec![
             Step{distance: 0.0, predecessor: None},
             Step{distance: 1.0, predecessor: Some(0)},
@@ -233,7 +233,7 @@ mod tests {
             (5,6,1.0),
             (7,0,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let op = dag.optimal_path(OptimalPathType::Shortest, 7);
+        let op = dag.optimal_path(&OptimalPathType::Shortest, 7);
         let true_op = vec![
             Step{distance: 1.0, predecessor: Some(7)},
             Step{distance: 3.0, predecessor: Some(0)},
@@ -262,7 +262,7 @@ mod tests {
             (5,6,1.0),
             (7,0,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
-        let op = dag.optimal_path(OptimalPathType::Longest, 7);
+        let op = dag.optimal_path(&OptimalPathType::Longest, 7);
         let true_op = vec![
             Step{distance: 1.0, predecessor: Some(7)},
             Step{distance: 3.0, predecessor: Some(0)},
