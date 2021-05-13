@@ -115,7 +115,7 @@ fn print_optimal_path(path_type: &OptimalPathType, optimal_path: &Vec<Step>, sou
             Some(x) => x.to_string(),
             None => String::from("None")
         };
-        println!("Node: {} \t-\t Predecessor: {} \t\t Distance from source: {}", i, predecessor, v.distance  );
+        println!("Node: {} \t-\t Predecessor: {} \t-\t Distance from source: {}", i, predecessor, v.distance  );
     }
     println!("{}",color::Fg(color::Reset));
     
