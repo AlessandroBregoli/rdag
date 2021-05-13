@@ -93,7 +93,7 @@ impl DAG {
         }
 
         match nodes[destination as usize].predecessor {
-            None => (f64::INFINITY, Vec::new()),
+            None => (nodes[destination as usize].distance, Vec::new()),
             Some(_) => {
                 let mut node = destination;
                 let mut optimal_path_list: Vec<u64> = Vec::new();
@@ -134,7 +134,7 @@ impl DAG {
 
 
 #[cfg(test)]
-mod dag_tests {
+mod tests {
     use super::*;
     #[test]
     fn init_edge() {
@@ -222,5 +222,67 @@ mod dag_tests {
         assert_eq!(o_p.0, 2.0);
         assert_eq!(o_p.1, vec![2,1,0]);
         
+    }
+
+    #[test]
+    fn shortest_path() {
+        let n_nodes = 8;
+        let edge_list = vec![
+            (0,1,2.0),
+            (1,2,3.0),
+            (2,3,1.0),
+            (0,4,4.0),
+            (4,3,3.0),
+            (5,4,1.0),
+            (5,6,1.0),
+            (7,0,1.0)];
+        let dag = DAG::init(&n_nodes, &edge_list);
+        let o_p = dag.optimal_path(OptimalPathType::Shortest, 7, 3);
+        
+        assert_eq!(o_p.0, 7.0);
+        assert_eq!(o_p.1, vec![3,2,1,0,7]);
+
+    }
+
+
+    #[test]
+    fn longest_path() {
+        let n_nodes = 8;
+        let edge_list = vec![
+            (0,1,2.0),
+            (1,2,3.0),
+            (2,3,1.0),
+            (0,4,4.0),
+            (4,3,4.0),
+            (5,4,1.0),
+            (5,6,1.0),
+            (7,0,1.0)];
+        let dag = DAG::init(&n_nodes, &edge_list);
+        let o_p = dag.optimal_path(OptimalPathType::Longest, 7, 3);
+        
+        assert_eq!(o_p.0, 9.0);
+        assert_eq!(o_p.1, vec![3,4,0,7]);
+
+    }
+
+
+    #[test]
+    fn impossible_path() {
+        let n_nodes = 8;
+        let edge_list = vec![
+            (0,1,2.0),
+            (1,2,3.0),
+            (2,3,1.0),
+            (0,4,4.0),
+            (4,3,3.0),
+            (5,4,1.0),
+            (5,6,1.0),
+            (7,0,1.0)];
+        let dag = DAG::init(&n_nodes, &edge_list);
+        let o_p = dag.optimal_path(OptimalPathType::Longest, 3, 7);
+        
+        assert_eq!(o_p.0, f64::NEG_INFINITY);
+        assert_eq!(o_p.1, vec![]);
+
     }
 }
