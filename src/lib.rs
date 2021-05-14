@@ -1,24 +1,31 @@
+//Internal enum for DFS visit
 enum NodeColor{
     White,
     Gray,
     Black,
 }
 
+//Main structure of the software. It contains the adj_list and all the methods for the business
+//logic
 pub struct DAG {
     adj_list: Vec<Vec<WeightedEdge>>,
 }
 
+//Enum used to select the shortest path or longest path function
 pub enum OptimalPathType {
     Shortest,
     Longest,
 }
 
+//Internal struct used by the adj_list to represents an adjacent node
 #[derive(Clone)]
 struct WeightedEdge {
     weight: f64,
     target: u64,
 }
 
+//Struct used by optimal_function. It represents the distance (shortest/longest path) from the
+//source and the predecessor node in the path to reach the source node.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Step {
     pub distance: f64,
@@ -27,6 +34,8 @@ pub struct Step {
 
 
 impl DAG {
+
+    //Init method for DAG struct from a weighted edge list.
     pub fn init(n_nodes: &u64, edge_list: &Vec<(u64,u64,f64)>) -> DAG {
         let mut adj_list:Vec<Vec<WeightedEdge>> = Vec::new();
         for _ in 0..*n_nodes {
@@ -45,7 +54,8 @@ impl DAG {
             adj_list: adj_list
         }
     }
-
+    
+    //Compute the topological sort for the dag represented by adj_list
     pub fn topological_sort(&self) -> Vec<u64> {
         let mut t_sort: Vec<u64> = Vec::new();
         let mut colors: Vec<NodeColor> = Vec::new();
@@ -63,7 +73,7 @@ impl DAG {
         return t_sort;
     }
 
-
+    //Internal function. Version of the dfs_visit modified to compute the topological order.
     fn topological_dfs_visit(&self, mut t_sort: &mut Vec<u64>, mut colors: &mut Vec<NodeColor>, node: usize){
         *colors.get_mut(node).unwrap() = NodeColor::Gray;
         for x in 0..self.adj_list[node].len(){
@@ -75,7 +85,8 @@ impl DAG {
         *colors.get_mut(node).unwrap() = NodeColor::Black;
         t_sort.insert(0, node as u64);
     }
-
+    
+    //This funtion allow to compute the single source shorest/longest path.
     pub fn optimal_path(&self, path_type: &OptimalPathType, source: u64) -> Vec<Step>{
         let mut nodes:Vec<Step> = Vec::new();
         
@@ -95,7 +106,9 @@ impl DAG {
         return nodes;
         
     }
-
+    
+    //Internal function used by optimal_path function to iteratively "relax" the edges and find the
+    //shortest/longest path.
     fn relax(path_type: &OptimalPathType, nodes: &mut Vec<Step>, u: u64, v: u64, vw_distance: f64) {
         macro_rules! update {() =>{
             nodes[v as usize].predecessor = Some(u);

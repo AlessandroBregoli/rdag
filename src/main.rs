@@ -1,9 +1,9 @@
+//This program allow to compute the topological order and the single source shortest/longest path
+//on a DAG.
+
 use clap::{App, Arg, SubCommand, AppSettings};
-
 use std::io::{BufReader, BufRead};
-
 use rdag::*;
-
 use termion::color;
 
 fn main() {
