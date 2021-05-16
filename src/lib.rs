@@ -1,4 +1,7 @@
+use std::collections::LinkedList;
+
 //Internal enum for DFS visit
+#[derive(Clone)]
 enum NodeColor{
     White,
     Gray,
@@ -56,12 +59,10 @@ impl DAG {
     }
     
     //Compute the topological sort for the dag represented by adj_list
-    pub fn topological_sort(&self) -> Vec<u64> {
-        let mut t_sort: Vec<u64> = Vec::new();
-        let mut colors: Vec<NodeColor> = Vec::new();
-        for _ in 0..self.adj_list.len(){
-            colors.push(NodeColor::White);
-        }
+    pub fn topological_sort(&self) -> LinkedList<u64> {
+        let mut t_sort: LinkedList<u64> = LinkedList::new();                    //CPX: O(1)
+        let mut colors: Vec<NodeColor> = 
+            vec![NodeColor::White; self.adj_list.len() as usize];               //CPX: O(n)
 
         for x in 0..self.adj_list.len(){
             if let NodeColor::White = colors[x] {
@@ -74,7 +75,8 @@ impl DAG {
     }
 
     //Internal function. Version of the dfs_visit modified to compute the topological order.
-    fn topological_dfs_visit(&self, mut t_sort: &mut Vec<u64>, mut colors: &mut Vec<NodeColor>, node: usize){
+    fn topological_dfs_visit(&self, mut t_sort: &mut LinkedList<u64>, 
+                             mut colors: &mut Vec<NodeColor>, node: usize){
         *colors.get_mut(node).unwrap() = NodeColor::Gray;
         for x in 0..self.adj_list[node].len(){
             let next = self.adj_list[node][x].target as usize;
@@ -83,7 +85,7 @@ impl DAG {
             }
         }
         *colors.get_mut(node).unwrap() = NodeColor::Black;
-        t_sort.insert(0, node as u64);
+        t_sort.push_front(node as u64);                                         //CPX: O(1)
     }
     
     //This funtion allow to compute the single source shorest/longest path.
@@ -159,7 +161,11 @@ mod tests {
         let edge_list = vec![(0,1,1.0),(0,2,1.0), (1,2,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
         let t_sort = dag.topological_sort();
-        assert_eq!(t_sort, vec![0,1,2]);
+        let mut ll = LinkedList::new();
+        ll.push_back(0);
+        ll.push_back(1);
+        ll.push_back(2);
+        assert_eq!(t_sort, ll);
 
     }
 
@@ -170,7 +176,12 @@ mod tests {
         let edge_list = vec![(0,2,1.0),(0,1,1.0), (1,2,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
         let t_sort = dag.topological_sort();
-        assert_eq!(t_sort, vec![0,1,2]);
+
+        let mut ll = LinkedList::new();
+        ll.push_back(0);
+        ll.push_back(1);
+        ll.push_back(2);
+        assert_eq!(t_sort, ll);
 
     }
 
@@ -189,7 +200,17 @@ mod tests {
             (7,0,1.0)];
         let dag = DAG::init(&n_nodes, &edge_list);
         let t_sort = dag.topological_sort();
-        assert_eq!(t_sort, vec![7,5,6,0,4,1,2,3]);
+
+        let mut ll = LinkedList::new();
+        ll.push_back(7);
+        ll.push_back(5);
+        ll.push_back(6);
+        ll.push_back(0);
+        ll.push_back(4);
+        ll.push_back(1);
+        ll.push_back(2);
+        ll.push_back(3);
+        assert_eq!(t_sort, ll);
 
     }
 

@@ -3,6 +3,7 @@
 
 use clap::{App, Arg, SubCommand, AppSettings};
 use std::io::{BufReader, BufRead};
+use std::collections::LinkedList;
 use rdag::*;
 use termion::color;
 
@@ -122,7 +123,7 @@ fn print_optimal_path(path_type: &OptimalPathType, optimal_path: &Vec<Step>, sou
 
 }
 
-fn print_bicolor_vector(vector: &Vec<u64>) {
+fn print_bicolor_vector(vector: &LinkedList<u64>) {
     print!("Output: ");
     for (i, v) in vector.iter().enumerate() {
         if i%2 == 0 {
