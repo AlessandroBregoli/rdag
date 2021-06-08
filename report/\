@@ -104,19 +104,19 @@ The **topological sort algorithm** is an algorithm witch find an order among the
   \label{algorithm_shortest_path}
   \begin{algorithmic}[1]
     \Function{dag-longest-paths}{$G$, $s$}
-    \State T = \Call{topological\_sort}{$G$} \label{lst:ts}
-    \For{$v \in G\setminus s$} \label{lst:start_init}
+    \State T = \Call{topological\_sort}{$G$}
+    \For{$v \in G\setminus s$}
       \State $v$.longest\_path = $-\infty$
     \EndFor
     \For{$v \in G$}
       \State $v$.predecessor = NILL
-    \EndFor 
-    \State $s$.longest\_path = 0 \label{lst:end_init}
-    \For{$u \in T$} \label{lst:start_search}
+    \EndFor
+    \State $s$.longest\_path = 0
+    \For{$u \in T$}
       \For{$v \in G.Adj[u]$}
         \State \Call{relax}{$u$,$v$,$w$}
       \EndFor
-    \EndFor \label{lst:end_search}
+    \EndFor
     
     \EndFunction
   \end{algorithmic}
@@ -133,71 +133,8 @@ topologically sorted order.
 
 The goal of this subsection is to show the linear complexity of the single source longest path
 algorithm. In order to achieve this goal we can split the algorithm in its main components
-described in Algorithm \ref{algorithm_relax}, Algorithm \ref{algorithm_topological_sort} and 
-Algorithm \ref{algorithm_shortest_path}.
-
-
-Analyzing the RELAX function in Algorithm \ref{algorithm_relax} we can say that the time complexity
-is: $O(1)$.^[This is true only if the access to the weight $w(u,v)$ is $O(1)$. For this reason the
-selection of an appropriate data structure is crucial.]
-
-
-It is well known from the literature that a DFS search has a time complexity of $O(V+E)$. Since the 
-TOPOLOGICAL SORT presented in Algorithm \ref{algorithm_topological_sort}  is basically a DFS
-also its time complexity is $O(V+E)$.
-
-
-In order to find the time complexity of the Single source shortest path presented in Algorithm
-\ref{algorithm_shortest_path}  we need to split the code as follow:
-
-- **Line \ref{lst:ts}**: it calls the TOPOLOGICAL SORT algorithm with time complexity $O(V+E)$
-- **Lines  \ref{lst:start_init} - \ref{lst:end_init}**: these lines initialize the data structures for
-  each node with a time complexity of $O(V)$.
-- **Lines \ref{lst:start_search} - \ref{lst:end_search}**: in this portion of code the algorithm
-  pass through each node and each vertex exactly once. For this reason the time complexity is
-  $O(V+E)$
-
-Combining the complexity of each piece of code we have that the complexity of the algorithm is: 
-$$O(V + E)$$
-
-# Implementation
-
-The previous section shows that the loongest single path algorithm has a complexity of $V(V+)$.
-However this is true only if we use the correct data structure to represent the graph. For example
-if we use an adjacency matrix both the Algorithm \ref{algorithm_topological_sort} and the nested
-for of the Algorithm \ref{algorithm_shortest_path} become $O(V^2)$. For this reason I decided to
-use a adjacency list implemented with a linked list.
-
-
-The programming language that I decided to use is 
-Rust^[[https://www.rust-lang.org](https://www.rust-lang.org/)] mainly becouse of its high performance.
-The implemented algorithm is available on 
-github^[[https://github.com/AlessandroBregoli/rdag](https://github.com/AlessandroBregoli/rdag)] and is
-capable of:
-
-- Load the structure of a network from an edge list file where each line is structured as follow:
-  Source, Destination, weight.
-- Return a topological order of the nodes for the loaded network.
-- Compute the single source  shortest/logest path given a network and a source node.
-
-## Demonstration
-
-![Directed acyclic graph](network.pdf) \label{figure:dag}
-
-In Figure \ref{figure:dag} there is the dag that we will use in this section.
-First of all we need a file containing the edge list representation of the network: Listing
-\ref{el}.
-
-~~~{#el caption="Edge List"}
-0   1   3.0
-0   2   2.0
-0   3   4.0
-0   4   10.5
-1   3   3.5
-2   3   0.2
-2   4   6.0
-3   4   1.5
-~~~
+described in Algorithm \ref{algorithm_relax}, Algorithm \ref{algorithm_topological_sort, than
+combined together in Algorithm \ref{algorithm_shortest_path}
 
 
 
