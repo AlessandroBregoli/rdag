@@ -84,6 +84,6 @@ Download or clone the current repository. Then execute the following command:
 ```
 cargo build --release
 ```
-The compile program will be available at: *target/release/rdag*.
+The compiled program will be available at: *target/release/rdag*.
 
 
