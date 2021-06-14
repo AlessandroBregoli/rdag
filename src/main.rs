@@ -5,7 +5,7 @@ use clap::{App, Arg, SubCommand, AppSettings};
 use std::io::{BufReader, BufRead};
 use std::collections::LinkedList;
 use rdag::*;
-use termion::color;
+use crossterm::style::{Color, SetForegroundColor, ResetColor};
 
 fn main() {
     let matches =  App::new("rdag")
@@ -108,9 +108,9 @@ fn print_optimal_path(path_type: &OptimalPathType, optimal_path: &Vec<Step>, sou
     println!(" from {}:", source);
     for (i, v) in optimal_path.iter().enumerate() {
         if i%2 == 0 {
-            print!("{}", color::Fg(color::Green));
+            print!("{}", SetForegroundColor(Color::DarkGreen));
         } else {
-            print!("{}", color::Fg(color::Red));
+            print!("{}", SetForegroundColor(Color::DarkRed));
         };
         let predecessor = match v.predecessor {
             Some(x) => x.to_string(),
@@ -118,7 +118,7 @@ fn print_optimal_path(path_type: &OptimalPathType, optimal_path: &Vec<Step>, sou
         };
         println!("Node: {} \t-\t Predecessor: {} \t-\t Distance from source: {}", i, predecessor, v.distance  );
     }
-    println!("{}",color::Fg(color::Reset));
+    println!("{}", ResetColor);
     
 
 }
@@ -127,11 +127,11 @@ fn print_bicolor_vector(vector: &LinkedList<u64>) {
     print!("Output: ");
     for (i, v) in vector.iter().enumerate() {
         if i%2 == 0 {
-            print!("{}", color::Fg(color::Green));
+            print!("{}", SetForegroundColor(Color::DarkGreen));
         } else {
-            print!("{}", color::Fg(color::Red));
+            print!("{}", SetForegroundColor(Color::DarkRed));
         };
         print!("{} ", v);
     }
-    println!("{}",color::Fg(color::Reset));
+    println!("{}", ResetColor);
 }
