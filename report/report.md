@@ -2,16 +2,25 @@
 title: Longest path in a DAG
 subtitle: Assignment of Graph Theory and Algorithms
 author: Alessandro Bregoli
+bibliography: biblio.bib
 header-includes:
   - \usepackage{algpseudocode, algorithm}
 ...
 
 
+# Introduction
 
-# Notation
+The goal of this report is to study the time complexity of the single source shortest/longest path
+for a Directed Acyclic Graph. After a short introduction to the notation in Section \ref{notation}, 
+I describe the single source longest simple path problem in Section \ref{problem} with partucluar
+attention to the solution algorithm and its computational complexity. Finally, in Section
+\ref{implementation}, I present my Rust implementation of the algorithm.
+
+# Notation {#notation}
+
 
 A **directed graph** $G=(V,E)$ is composed by a finite set of **nodes** $V$ and a finite set of
-**edges** $E$ such that $E \subseteq [V]^2$. A graph is weighted if there is a function 
+**edges** $E$ such that $E \subseteq [V]^2$ (@cormen). A graph is weighted if there is a function 
 $w : E\rightarrow \mathbb{R}$. Given two nodes $x,y \in V$  we say that $x$ is
 **adjacent** to $y$ if $\{x,y\} \in E$. This relation isn't symmetric. A **path** is a sequence of
 adjacent vertices $\langle v_1,v_2,...,v_k\rangle : v_i \in V \land \{v_i, v_{i+1}\}\in E$. The
@@ -22,7 +31,7 @@ $v_0 =v_k$ and the path contains at least one edge. A Directed Acyclic Graph (**
 directed graph without cycles of any length. A **shortest simple path** is a simple path of minimal
 weight. Conversely, a **longest simple path** is a simple path of maximum weight.
 
-# Single source longest simple path problem
+# Single source longest simple path problem {#problem}
 
 The single source shortest path problem can be solved in polynomial time for each graph. On the
 other hand, the single source longest simple path is NP-hard for a generic graph. However, if we
@@ -32,9 +41,10 @@ path in linear time.
 
 ## The algorithm
 
-Both the single source shortest path and the single source longest path for a directed acyclic
-graph are based on two components: a relax procedure and a topological sort algorithm. The only
-difference between the two algorithms is the definition of the relax function.
+In @cormen the authors say that both the single source shortest path and the single source longest
+path for a directed acyclic graph are based on two components: a relax procedure and a topological
+sort algorithm. The only difference between the two algorithms is the definition of the relax
+function.
 
 - **Relax procedure for the single source shortest path algorithm**. The process of relaxing an
   edge $(u,v)$ consists of testing whether we can improve the shortest path to $v$ found, so that
@@ -160,7 +170,7 @@ In order to find the time complexity of the Single source shortest path presente
 Combining the complexity of each piece of code we have that the complexity of the algorithm is: 
 $$O(V + E)$$
 
-# Implementation
+# Implementation {#implementation}
 
 The previous section shows that the loongest single path algorithm has a complexity of $V(V+)$.
 However this is true only if we use the correct data structure to represent the graph. For example
@@ -170,9 +180,9 @@ use a adjacency list implemented with a linked list.
 
 
 The programming language that I decided to use is 
-Rust^[[https://www.rust-lang.org](https://www.rust-lang.org/)] mainly becouse of its high performance.
+Rust^[\url{https://www.rust-lang.org}] mainly becouse of its high performance.
 The implemented algorithm is available on 
-github^[[https://github.com/AlessandroBregoli/rdag](https://github.com/AlessandroBregoli/rdag)] and is
+github^[\url{https://github.com/AlessandroBregoli/rdag}] and is
 capable of:
 
 - Load the structure of a network from an edge list file where each line is structured as follow:
@@ -182,23 +192,75 @@ capable of:
 
 ## Demonstration
 
-![Directed acyclic graph](network.pdf) \label{figure:dag}
+![Directed acyclic graph\label{fig:dag}](network.pdf)
 
-In Figure \ref{figure:dag} there is the dag that we will use in this section.
+In Figure \ref{fig:dag} there is the dag that we will use in this section.
 First of all we need a file containing the edge list representation of the network: Listing
 \ref{el}.
 
-~~~{#el caption="Edge List"}
-0   1   3.0
-0   2   2.0
-0   3   4.0
-0   4   10.5
-1   3   3.5
-2   3   0.2
-2   4   6.0
-3   4   1.5
+
+
+```{#el caption="Edge List (net5.el)"}
+                        0   1   3.0
+                        0   2   2.0
+                        0   3   4.0
+                        0   4   10.5
+                        1   3   3.5
+                        2   3   0.2
+                        2   4   6.0
+                        3   4   1.5
+```
+
+The program *rdag* allow to load this file and find a topological order for the nodes (Listing
+\ref{topological}) using the following arguments:
+
+- *-n 5*: number of nodes in the network
+- *-p net5.el*: path to the network file
+- *topological*: subcommand to return a topologically ordered list of nodes
+
+```{#topological caption="rdag - topological sort"}
+$ rdag -n 5 -p net5.el topological
+Output: 0 2 1 3 4
+```
+
+*rdag* is also capable of computing the single source shortest/longest path (Listing \ref{SLpath}.
+The required parameters to accomplish these tasks are:
+
+- *-n 5*: number of nodes in the network
+- *-p net5.el*: path to the network file
+- *SLpath*: subcommand to compute the single source shortest/longest path
+- *-s 0*: source node
+- *-l*: this is an optional parameter. If present the program computes the shortest path.
+  Otherwise it computes the longest path
+
+\pagebreak
+
+~~~{#SLpath caption="rdag - shortest/longest path"}
+$ rdag -n 5 -p net5.el SLpath -s 0
+Shortest path from 0:
+Node: 0 	-	 Predecessor: None 	-	 Distance from source: 0
+Node: 1 	-	 Predecessor: 0 	-	 Distance from source: 3
+Node: 2 	-	 Predecessor: 0 	-	 Distance from source: 2
+Node: 3 	-	 Predecessor: 2 	-	 Distance from source: 2.2
+Node: 4 	-	 Predecessor: 3 	-	 Distance from source: 3.7
+
+$ rdag -n 5 -p net5.el SLpath -l -s 0
+Longest path from 0:
+Node: 0 	-	 Predecessor: None 	-	 Distance from source: 0
+Node: 1 	-	 Predecessor: 0 	-	 Distance from source: 3
+Node: 2 	-	 Predecessor: 0 	-	 Distance from source: 2
+Node: 3 	-	 Predecessor: 1 	-	 Distance from source: 6.5
+Node: 4 	-	 Predecessor: 0 	-	 Distance from source: 10.5
 ~~~
 
+# Conclusion
+
+In this assignment I studied the time complexity of the single source shortest path algorithm, both
+form a theoretical and practical point of view. In fact, while the theoretical implementation is
+proved to has a time complexity fo $O(V+E)$, in practice a poor choiche of the data structure can
+drammatically worsen the complexity of the algorithm.
+
+# Bibliography
 
 
 
