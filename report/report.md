@@ -36,7 +36,7 @@ weight. Conversely, a **longest simple path** is a simple path of maximum weight
 The single source shortest path problem can be solved in polynomial time for each graph. On the
 other hand, the single source longest simple path is NP-hard for a generic graph. However, if we
 only want to solve the problem for directed acyclic graphs we can modify the algorithm for finding
-the single source shortest path in a convenient way and identify the single source simple longest
+the single source shortest path conveniently and identify the single source simple longest
 path in linear time.
 
 ## The algorithm
@@ -47,10 +47,10 @@ sort algorithm. The only difference between the two algorithms is the definition
 function.
 
 - **Relax procedure for the single source shortest path algorithm**. The process of relaxing an
-  edge $(u,v)$ consists of testing whether we can improve the shortest path to $v$ found, so that
-  far by going through $u$ and, if so, updating the shortest path.
+  edge $(u,v)$ consists of testing whether we can improve the shortest path to $v$ found so far 
+  by going through $u$ and, if so, updating the shortest path.
 - **Relax procedure for the single source longest simple path algorithm**. The process of relaxing
-  an edge $(u,v)$ consists of testing whether we can improve the longest path to $v$ found, so that
+  an edge $(u,v)$ consists of testing whether we can improve the longest path to $v$ found so
   far by going through $u$ and, if so, updating the longest path. (Algorithm \ref{algorithm_relax})
 
 \begin{algorithm}
@@ -69,7 +69,7 @@ function.
 
 The **topological sort algorithm** is an algorithm witch find an order among the nodes such that,
   if there is and edge $(u,v)$ then $u$ appear before $v$ in the topological ordering. As shown in
-    \ref{algorithm_topological_sort}) , the topological ordering is based on the DFS-visit and
+    Algorithm \ref{algorithm_topological_sort} , the topological ordering is based on the DFS-visit and
     inherits its computational complexity.   
 
 
@@ -135,7 +135,7 @@ The **topological sort algorithm** is an algorithm witch find an order among the
 By exploiting the topological ordering it is possible to define the **single source longest path**
 **algorithm** as shown in Algorithm \ref{algorithm_shortest_path}.
 The rationale behind this algorithm is based on the fact that there are no cycles in a DAG.
-Consequently if the dag contains a path from vertex $u$ to vertex $v$, then $u$ precedes $v$ in the
+Consequently, if the dag contains a path from vertex $u$ to vertex $v$, then $u$ precedes $v$ in the
 topological sort. For this reason it is sufficient to make just one pass over the vertices in the
 topologically sorted order.
 
@@ -158,7 +158,7 @@ also its time complexity is $O(V+E)$.
 
 
 In order to find the time complexity of the Single source shortest path presented in Algorithm
-\ref{algorithm_shortest_path}  we need to split the code as follow:
+\ref{algorithm_shortest_path}  we need to split the code as follows:
 
 - **Line \ref{lst:ts}**: it calls the TOPOLOGICAL SORT algorithm with time complexity $O(V+E)$
 - **Lines  \ref{lst:start_init} - \ref{lst:end_init}**: these lines initialize the data structures for
@@ -172,20 +172,20 @@ $$O(V + E)$$
 
 # Implementation {#implementation}
 
-The previous section shows that the loongest single path algorithm has a complexity of $V(V+)$.
-However this is true only if we use the correct data structure to represent the graph. For example
+The previous section shows that the loongest single path algorithm has a complexity of $O(V+E)$.
+However, this is true only if we use the correct data structure to represent the graph. For example
 if we use an adjacency matrix both the Algorithm \ref{algorithm_topological_sort} and the nested
 for of the Algorithm \ref{algorithm_shortest_path} become $O(V^2)$. For this reason I decided to
 use a adjacency list implemented with a linked list.
 
 
 The programming language that I decided to use is 
-Rust^[\url{https://www.rust-lang.org}] mainly becouse of its high performance.
+Rust^[\url{https://www.rust-lang.org}] mainly because of its high performances.
 The implemented algorithm is available on 
 github^[\url{https://github.com/AlessandroBregoli/rdag}] and is
 capable of:
 
-- Load the structure of a network from an edge list file where each line is structured as follow:
+- Load the structure of a network from an edge list file where each line is structured as follows:
   Source, Destination, weight.
 - Return a topological order of the nodes for the loaded network.
 - Compute the single source  shortest/logest path given a network and a source node.
@@ -195,11 +195,11 @@ capable of:
 ![Directed acyclic graph\label{fig:dag}](network.pdf)
 
 In Figure \ref{fig:dag} there is the dag that we will use in this section.
-First of all we need a file containing the edge list representation of the network: Listing
+First, we need a file containing the edge list representation of the network: Listing
 \ref{el}.
 
 
-
+\pagebreak
 ```{#el caption="Edge List (net5.el)"}
                         0   1   3.0
                         0   2   2.0
@@ -223,17 +223,16 @@ $ rdag -n 5 -p net5.el topological
 Output: 0 2 1 3 4
 ```
 
-*rdag* is also capable of computing the single source shortest/longest path (Listing \ref{SLpath}.
+*rdag* is also capable of computing the single source shortest/longest path (Listing&nbsp;\ref{SLpath}).
 The required parameters to accomplish these tasks are:
 
 - *-n 5*: number of nodes in the network
 - *-p net5.el*: path to the network file
 - *SLpath*: subcommand to compute the single source shortest/longest path
 - *-s 0*: source node
-- *-l*: this is an optional parameter. If present the program computes the shortest path.
-  Otherwise it computes the longest path
+- *-l*: this is an optional parameter. If present, the program computes the shortest path.
+  Otherwise, it computes the longest path
 
-\pagebreak
 
 ~~~{#SLpath caption="rdag - shortest/longest path"}
 $ rdag -n 5 -p net5.el SLpath -s 0
@@ -257,8 +256,8 @@ Node: 4 	-	 Predecessor: 0 	-	 Distance from source: 10.5
 
 In this assignment I studied the time complexity of the single source shortest path algorithm, both
 form a theoretical and practical point of view. In fact, while the theoretical implementation is
-proved to has a time complexity fo $O(V+E)$, in practice a poor choiche of the data structure can
-drammatically worsen the complexity of the algorithm.
+proved to have a time complexity of $O(V+E)$, in practice a poor choice of the data structure can
+dramatically worsen the complexity of the algorithm.
 
 # Bibliography
 

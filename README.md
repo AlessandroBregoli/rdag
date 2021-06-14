@@ -24,13 +24,13 @@ version.
 3   4   1.5
 ```
 
-The node labels (first two columns) must be a contiguous set of integers starging from 0. The edge
+The node labels (first two columns) must be a contiguous set of integers starting from 0. The edge
 weight (third column) is represented by a float number.
 
 ### Topological Sort
 
 
-The program *rdag* allow to load this file and find a topological order for the nodes
+The program *rdag* allows to load this file and find a topological order for the nodes
 using the following arguments:
 
 - *-n 5*: number of nodes in the network
@@ -52,8 +52,8 @@ The required parameters to accomplish these tasks are:
 - *-p net5.el*: path to the network file
 - *SLpath*: subcommand to compute the single source shortest/longest path
 - *-s 0*: source node
-- *-l*: this is an optional parameter. If present the program computes the shortest path.
-  Otherwise it computes the longest path
+- *-l*: this is an optional parameter. If present, the program computes the shortest path.
+  Otherwise, it computes the longest path
 
 
 ```
